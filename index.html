@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MS Followers | Supabase Secure Coins</title>
-  
-  <!-- EFFECTIVECPM NETWORK AD SCRIPT -->
-  <script type="text/javascript" src="https://pl30752031.effectivecpmnetwork.com/83/74/4d/83744d8779f0ee6f7de6a5db32467a7a.js"></script>
 
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -209,9 +206,12 @@
         <i class="fa-solid fa-play-circle"></i> Earn Free Coins
       </div>
       <div class="ad-reward-box">
-        <h3>Watch 10-Second Sponsored Ad</h3>
-        <p style="color: #38ef7d; font-size: 0.85rem; font-weight: 600; margin-top: 4px;">
-          ⚠️ View the ad page for 10 seconds to receive your coins!
+        <h3>Watch 15-Second Sponsored Ad</h3>
+        <p style="color: #ff416c; font-size: 0.85rem; font-weight: 700; margin-top: 6px;">
+          🚨 REQUIREMENT: You MUST view the opened ad page for at least 15 full seconds!
+        </p>
+        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">
+          Closing or leaving the ad page early will cancel your reward.
         </p>
         <button class="btn-watch-ad" onclick="startAdTimer()">
           <i class="fa-solid fa-film"></i> Watch Ad (+80 Coins)
@@ -257,14 +257,14 @@
     </div>
   </div>
 
-  <!-- 10-Second Ad Modal -->
+  <!-- 15-Second Ad Modal -->
   <div class="ad-modal" id="adModal">
     <h2 style="color: var(--secondary); margin-bottom: 5px;">Sponsored Ad Active</h2>
     <p style="color: #38ef7d; font-size: 0.95rem; font-weight: 600; margin-bottom: 15px;">
-      ⚠️ Please view the ad page for at least 10 seconds!
+      ⚠️ Stay on the ad page for at least 15 seconds!
     </p>
     
-    <div class="ad-timer-circle" id="adTimerText">10</div>
+    <div class="ad-timer-circle" id="adTimerText">15</div>
 
     <button id="claimAdBtn" class="btn-claim-ad" onclick="claimAdReward()">
       <i class="fa-solid fa-circle-check"></i> Claim +80 Coins Now!
@@ -274,10 +274,13 @@
   <script>
     // PRE-CONFIGURED SUPABASE CREDENTIALS
     const SUPABASE_URL = "https://fuxmbdedoewokiykwcmb.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1eG1iZGVkb2V3b2tpeWt3Y21iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxODgxMDcsImV4cCI6MjEwMTc2NDEwN30.KTxw7aTj-5HErqPjzSJGNpbwa58_9ZqEwHN36qexO-k";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1eG1iZGVkb2V3b2tipWt3Y21iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxODgxMDcsImV4cCI6MjEwMTc2NDEwN30.KTxw7aTj-5HErqPjzSJGNpbwa58_9ZqEwHN36qexO-k";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const DISCORD_WEBHOOK_URL = "https://canary.discord.com/api/webhooks/1530479431347339415/9kdSYUvN-xavZMPB3p0a0wftd0AhWB-GX5d5iSNsV5fn_rGfGd100QlZbAGXJ5SHuTrl";
+    
+    // YOUR DIRECT SMARTLINK URL
+    const DIRECT_AD_URL = "https://www.effectivecpmnetwork.com/wj5rstgx11?key=f658aa27fb06e5a0368d98fb6b8579fb";
 
     let currentUser = null;
     let userCoins = 0;
@@ -349,21 +352,29 @@
       location.reload();
     }
 
-    // Ad Timer System
-    let secondsLeft = 10;
+    // 15-SECOND AD TIMER SYSTEM
+    let secondsLeft = 15;
     let adInterval = null;
 
     function startAdTimer() {
-      secondsLeft = 10;
+      // 1. Open direct ad link in new tab
+      window.open(DIRECT_AD_URL, '_blank');
+
+      // 2. Start 15-second timer
+      secondsLeft = 15;
       document.getElementById('adTimerText').innerText = secondsLeft;
       document.getElementById('claimAdBtn').style.display = 'none';
       document.getElementById('adModal').style.display = 'flex';
 
+      if (adInterval) clearInterval(adInterval);
+
       adInterval = setInterval(() => {
         secondsLeft--;
         document.getElementById('adTimerText').innerText = secondsLeft;
+
         if (secondsLeft <= 0) {
           clearInterval(adInterval);
+          document.getElementById('adTimerText').style.display = 'none';
           document.getElementById('claimAdBtn').style.display = 'inline-block';
         }
       }, 1000);
@@ -372,12 +383,13 @@
     async function claimAdReward() {
       await updateDatabaseCoins(userCoins + 80);
       document.getElementById('adModal').style.display = 'none';
+      document.getElementById('adTimerText').style.display = 'flex';
       
       const statusMsg = document.getElementById('statusMsg');
       statusMsg.style.background = "rgba(56, 239, 125, 0.15)";
       statusMsg.style.border = "1px solid #38ef7d";
       statusMsg.style.color = "#38ef7d";
-      statusMsg.innerHTML = "🎉 <strong>+80 Coins Saved to Supabase!</strong>";
+      statusMsg.innerHTML = "🎉 <strong>+80 Coins Credited! (15-Sec Ad Verified)</strong>";
       statusMsg.style.display = "block";
     }
 
@@ -398,7 +410,7 @@
         statusMsg.style.background = "rgba(255, 65, 108, 0.15)";
         statusMsg.style.border = "1px solid #ff416c";
         statusMsg.style.color = "#ff416c";
-        statusMsg.innerHTML = `❌ <strong>Need ${costCoins} Coins!</strong> Watch more ads to earn coins.`;
+        statusMsg.innerHTML = `❌ <strong>Need ${costCoins} Coins!</strong> Watch more 15-second ads to earn coins.`;
         statusMsg.style.display = "block";
         return;
       }
