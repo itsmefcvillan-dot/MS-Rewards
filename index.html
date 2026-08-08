@@ -3,10 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MS Followers | Watch & Earn</title>
+  <title>MS Followers | Supabase Secure Coins</title>
   
   <!-- EFFECTIVECPM NETWORK AD SCRIPT -->
   <script type="text/javascript" src="https://pl30752031.effectivecpmnetwork.com/83/74/4d/83744d8779f0ee6f7de6a5db32467a7a.js"></script>
+
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <!-- Google Fonts & FontAwesome Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -25,12 +28,7 @@
       --text-muted: #a1a1aa;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
     body {
       background-color: var(--bg);
@@ -42,271 +40,163 @@
       padding: 20px;
     }
 
-    /* Top Bar with Wallet Balance */
+    /* AUTH OVERLAY */
+    .auth-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(9, 10, 15, 0.95);
+      backdrop-filter: blur(12px);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 10000; padding: 20px;
+    }
+
+    .auth-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--primary-glow);
+      border-radius: 24px; padding: 30px 25px;
+      width: 100%; max-width: 400px;
+      box-shadow: 0 0 30px rgba(138, 43, 226, 0.3); text-align: center;
+    }
+
+    .auth-card h2 { font-size: 1.6rem; color: var(--secondary); margin-bottom: 10px; }
+
+    .auth-input-group { margin-bottom: 15px; text-align: left; }
+    .auth-input-group label { font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 5px; }
+    .auth-input-group input {
+      width: 100%; padding: 14px 16px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--card-border);
+      border-radius: 12px; color: #fff; outline: none;
+    }
+
+    .btn-auth {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none; border-radius: 12px;
+      color: white; font-weight: 700; cursor: pointer; margin-top: 10px;
+    }
+
+    .auth-toggle-link { margin-top: 15px; font-size: 0.85rem; color: var(--secondary); cursor: pointer; text-decoration: underline; }
+
+    /* TOP BAR */
     .top-bar {
-      width: 100%;
-      max-width: 600px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      width: 100%; max-width: 600px;
+      display: flex; justify-content: space-between; align-items: center;
       padding: 15px 20px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--card-border);
-      backdrop-filter: blur(12px);
-      border-radius: 20px;
-      margin-bottom: 25px;
+      backdrop-filter: blur(12px); border-radius: 20px; margin-bottom: 25px;
     }
 
-    .brand-title {
-      font-weight: 800;
-      font-size: 1.2rem;
-      background: linear-gradient(135deg, #fff, var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+    .user-info { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--text-muted); }
+    .btn-logout { background: transparent; border: 1px solid #ff416c; color: #ff416c; padding: 4px 10px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; }
 
     .coin-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255, 215, 0, 0.15);
-      border: 1px solid var(--gold);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-weight: 700;
-      color: var(--gold);
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255, 215, 0, 0.15); border: 1px solid var(--gold);
+      padding: 8px 16px; border-radius: 20px; font-weight: 700; color: var(--gold);
     }
 
-    /* Main Container */
-    .container {
-      width: 100%;
-      max-width: 600px;
-    }
+    .container { width: 100%; max-width: 600px; }
 
     .card-section {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--card-border);
-      backdrop-filter: blur(16px);
-      border-radius: 24px;
-      padding: 25px;
-      margin-bottom: 25px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(16px); border-radius: 24px; padding: 25px; margin-bottom: 25px;
     }
 
-    .section-header {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--secondary);
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .section-header { font-size: 1.2rem; font-weight: 700; color: var(--secondary); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
 
-    /* Watch Ad Box */
     .ad-reward-box {
-      text-align: center;
-      padding: 20px;
+      text-align: center; padding: 20px;
       background: rgba(138, 43, 226, 0.1);
-      border: 1px dashed var(--primary-glow);
-      border-radius: 18px;
-    }
-
-    .ad-notice-badge {
-      display: inline-block;
-      background: rgba(0, 242, 254, 0.15);
-      border: 1px solid var(--secondary);
-      color: var(--secondary);
-      font-size: 0.8rem;
-      font-weight: 600;
-      padding: 4px 12px;
-      border-radius: 12px;
-      margin-bottom: 10px;
+      border: 1px dashed var(--primary-glow); border-radius: 18px;
     }
 
     .btn-watch-ad {
-      width: 100%;
-      padding: 16px;
-      margin-top: 15px;
+      width: 100%; padding: 16px; margin-top: 15px;
       background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border: none;
-      border-radius: 14px;
-      color: white;
-      font-size: 1.05rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      box-shadow: 0 10px 25px rgba(138, 43, 226, 0.4);
-      transition: all 0.3s ease;
+      border: none; border-radius: 14px; color: white; font-size: 1.05rem; font-weight: 700; cursor: pointer;
     }
 
-    .btn-watch-ad:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 15px 30px rgba(0, 242, 254, 0.5);
-    }
-
-    /* Exchange Store Cards */
     .exchange-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--card-border);
-      padding: 18px 20px;
-      border-radius: 18px;
-      margin-bottom: 15px;
-      transition: all 0.3s ease;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border);
+      padding: 18px 20px; border-radius: 18px; margin-bottom: 15px;
     }
 
-    .exchange-card:hover {
-      border-color: var(--secondary);
-      background: rgba(0, 242, 254, 0.08);
-    }
+    .btn-exchange { padding: 12px 18px; background: var(--gold); color: #000; font-weight: 800; border: none; border-radius: 12px; cursor: pointer; }
 
-    .pkg-info h4 {
-      font-size: 1.15rem;
-      margin-bottom: 2px;
-    }
-
-    .pkg-info p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .btn-exchange {
-      padding: 12px 18px;
-      background: var(--gold);
-      color: #000;
-      font-weight: 800;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.3s ease;
-      white-space: nowrap;
-    }
-
-    .btn-exchange:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-    }
-
-    /* Input Fields */
-    .input-group {
-      margin-bottom: 20px;
-    }
-
-    .input-group label {
-      display: block;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
+    .input-group { margin-bottom: 20px; }
+    .input-group label { display: block; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px; }
     .input-group input {
-      width: 100%;
-      padding: 16px 20px;
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      color: #fff;
-      font-size: 1rem;
-      outline: none;
+      width: 100%; padding: 16px 20px; background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border); border-radius: 12px; color: #fff; outline: none;
     }
 
-    .input-group input:focus {
-      border-color: var(--secondary);
-      box-shadow: 0 0 15px rgba(0, 242, 254, 0.35);
-    }
-
-    /* FULLSCREEN AD MODAL OVERLAY */
+    /* FULLSCREEN AD MODAL */
     .ad-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.95);
-      backdrop-filter: blur(10px);
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      padding: 20px;
-      text-align: center;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px);
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 9999; padding: 20px; text-align: center;
     }
 
     .ad-timer-circle {
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      border: 4px solid var(--secondary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--secondary);
-      margin-bottom: 15px;
-      box-shadow: 0 0 30px rgba(0, 242, 254, 0.5);
+      width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--secondary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem; font-weight: 800; color: var(--secondary); margin-bottom: 15px;
     }
 
-    .ad-content-box {
-      width: 100%;
-      max-width: 450px;
-      height: 180px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px dashed var(--card-border);
-      border-radius: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 25px;
-      padding: 15px;
-    }
+    .btn-claim-ad { padding: 16px 40px; background: #38ef7d; color: #000; font-weight: 800; border: none; border-radius: 14px; cursor: pointer; display: none; }
 
-    .btn-claim-ad {
-      padding: 16px 40px;
-      background: #38ef7d;
-      color: #000;
-      font-weight: 800;
-      font-size: 1.1rem;
-      border: none;
-      border-radius: 14px;
-      cursor: pointer;
-      display: none;
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-
-    .status-msg {
-      padding: 15px;
-      border-radius: 12px;
-      text-align: center;
-      font-weight: 600;
-      display: none;
-      margin-top: 15px;
-      line-height: 1.5;
-    }
+    .status-msg { padding: 15px; border-radius: 12px; text-align: center; font-weight: 600; display: none; margin-top: 15px; }
   </style>
 </head>
 <body>
 
-  <!-- Top Bar with Wallet Balance -->
+  <!-- AUTHENTICATION OVERLAY -->
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-card" id="loginBox">
+      <h2><i class="fa-solid fa-lock"></i> Account Login</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Login to save your coins securely!</p>
+      
+      <div class="auth-input-group">
+        <label>Email Address</label>
+        <input type="email" id="loginEmail" placeholder="yourname@example.com">
+      </div>
+      <div class="auth-input-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••">
+      </div>
+
+      <button class="btn-auth" onclick="handleLogin()">Login to Wallet</button>
+      <div class="auth-toggle-link" onclick="toggleAuthView('signup')">Don't have an account? Sign Up</div>
+    </div>
+
+    <div class="auth-card" id="signupBox" style="display: none;">
+      <h2><i class="fa-solid fa-user-plus"></i> Create Account</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Register and earn safely!</p>
+      
+      <div class="auth-input-group">
+        <label>Email Address</label>
+        <input type="email" id="signupEmail" placeholder="yourname@example.com">
+      </div>
+      <div class="auth-input-group">
+        <label>Password</label>
+        <input type="password" id="signupPassword" placeholder="Minimum 6 characters">
+      </div>
+
+      <button class="btn-auth" onclick="handleSignUp()">Register Account</button>
+      <div class="auth-toggle-link" onclick="toggleAuthView('login')">Already have an account? Login</div>
+    </div>
+  </div>
+
+  <!-- MAIN APP TOP BAR -->
   <div class="top-bar">
-    <div class="brand-title"><i class="fa-solid fa-coins" style="color: var(--gold);"></i> MS Rewards</div>
+    <div class="user-info">
+      <span id="userEmailDisplay">Loading...</span>
+      <button class="btn-logout" onclick="handleLogout()">Logout</button>
+    </div>
     <div class="coin-badge">
       <i class="fa-solid fa-coins"></i>
       <span id="userCoinBalance">0</span> Coins
@@ -314,20 +204,14 @@
   </div>
 
   <div class="container">
-    
-    <!-- Section 1: Ad Mining -->
     <div class="card-section">
       <div class="section-header">
         <i class="fa-solid fa-play-circle"></i> Earn Free Coins
       </div>
       <div class="ad-reward-box">
-        <div class="ad-notice-badge"><i class="fa-solid fa-clock"></i> Important Requirement</div>
         <h3>Watch 10-Second Sponsored Ad</h3>
-        <p style="color: #38ef7d; font-size: 0.9rem; font-weight: 600; margin-top: 6px;">
-          ⚠️ Please watch the ad for at least 10 seconds to get your reward!
-        </p>
-        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">
-          Earn <b>80 Coins</b> per ad watched. Collect 800 Coins (10 Ads) for 100 Followers or 8,000 Coins for 1,000 Followers!
+        <p style="color: #38ef7d; font-size: 0.85rem; font-weight: 600; margin-top: 4px;">
+          ⚠️ View the ad page for 10 seconds to receive your coins!
         </p>
         <button class="btn-watch-ad" onclick="startAdTimer()">
           <i class="fa-solid fa-film"></i> Watch Ad (+80 Coins)
@@ -335,89 +219,45 @@
       </div>
     </div>
 
-    <!-- Section 2: Coin Exchange Store -->
     <div class="card-section">
       <div class="section-header">
         <i class="fa-solid fa-store"></i> Followers Exchange Store
       </div>
 
       <div class="input-group">
-        <label><i class="fa-solid fa-user"></i> Target Instagram Handle or Account Link</label>
+        <label><i class="fa-solid fa-user"></i> Target Instagram Handle or Profile Link</label>
         <input type="text" id="targetHandle" placeholder="@yourusername or Profile URL">
       </div>
 
-      <!-- 100 Followers Package -->
       <div class="exchange-card">
-        <div class="pkg-info">
+        <div>
           <h4>100 Free Followers</h4>
-          <p>Requires 10 Ads Watched</p>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Requires 800 Coins</p>
         </div>
-        <button class="btn-exchange" onclick="exchangeCoins(800, '100 Free Followers')">
-          <i class="fa-solid fa-coins"></i> 800 Coins
-        </button>
+        <button class="btn-exchange" onclick="exchangeCoins(800, '100 Free Followers')">800 Coins</button>
       </div>
 
-      <!-- 200 Followers Package -->
       <div class="exchange-card">
-        <div class="pkg-info">
-          <h4>200 Free Followers</h4>
-          <p>Requires 20 Ads Watched</p>
-        </div>
-        <button class="btn-exchange" onclick="exchangeCoins(1600, '200 Free Followers')">
-          <i class="fa-solid fa-coins"></i> 1,600 Coins
-        </button>
-      </div>
-
-      <!-- 300 Followers Package -->
-      <div class="exchange-card">
-        <div class="pkg-info">
-          <h4>300 Free Followers</h4>
-          <p>Requires 30 Ads Watched</p>
-        </div>
-        <button class="btn-exchange" onclick="exchangeCoins(2400, '300 Free Followers')">
-          <i class="fa-solid fa-coins"></i> 2,400 Coins
-        </button>
-      </div>
-
-      <!-- 500 Followers Package -->
-      <div class="exchange-card">
-        <div class="pkg-info">
+        <div>
           <h4>500 Free Followers</h4>
-          <p>Requires 50 Ads Watched</p>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Requires 4,000 Coins</p>
         </div>
-        <button class="btn-exchange" onclick="exchangeCoins(4000, '500 Free Followers')">
-          <i class="fa-solid fa-coins"></i> 4,000 Coins
-        </button>
+        <button class="btn-exchange" onclick="exchangeCoins(4000, '500 Free Followers')">4,000 Coins</button>
       </div>
 
-      <!-- 700 Followers Package -->
       <div class="exchange-card">
-        <div class="pkg-info">
-          <h4>700 Free Followers</h4>
-          <p>Requires 70 Ads Watched</p>
-        </div>
-        <button class="btn-exchange" onclick="exchangeCoins(5600, '700 Free Followers')">
-          <i class="fa-solid fa-coins"></i> 5,600 Coins
-        </button>
-      </div>
-
-      <!-- 1,000 Followers Package -->
-      <div class="exchange-card">
-        <div class="pkg-info">
+        <div>
           <h4>1,000 Free Followers</h4>
-          <p>Requires 100 Ads Watched</p>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Requires 8,000 Coins</p>
         </div>
-        <button class="btn-exchange" onclick="exchangeCoins(8000, '1,000 Free Followers')">
-          <i class="fa-solid fa-coins"></i> 8,000 Coins
-        </button>
+        <button class="btn-exchange" onclick="exchangeCoins(8000, '1,000 Free Followers')">8,000 Coins</button>
       </div>
 
       <div id="statusMsg" class="status-msg"></div>
     </div>
-
   </div>
 
-  <!-- Fullscreen 10-Second Ad Modal -->
+  <!-- 10-Second Ad Modal -->
   <div class="ad-modal" id="adModal">
     <h2 style="color: var(--secondary); margin-bottom: 5px;">Sponsored Ad Active</h2>
     <p style="color: #38ef7d; font-size: 0.95rem; font-weight: 600; margin-bottom: 15px;">
@@ -426,68 +266,121 @@
     
     <div class="ad-timer-circle" id="adTimerText">10</div>
 
-    <div class="ad-content-box">
-      <i class="fa-solid fa-rectangle-ad" style="font-size: 3.5rem; color: var(--secondary); margin-bottom: 10px;"></i>
-      <p style="color: var(--text-muted); font-size: 0.85rem;">Ad impression active in background</p>
-    </div>
-
     <button id="claimAdBtn" class="btn-claim-ad" onclick="claimAdReward()">
       <i class="fa-solid fa-circle-check"></i> Claim +80 Coins Now!
     </button>
   </div>
 
   <script>
+    // PRE-CONFIGURED SUPABASE CREDENTIALS
+    const SUPABASE_URL = "https://fuxmbdedoewokiykwcmb.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1eG1iZGVkb2V3b2tpeWt3Y21iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxODgxMDcsImV4cCI6MjEwMTc2NDEwN30.KTxw7aTj-5HErqPjzSJGNpbwa58_9ZqEwHN36qexO-k";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
     const DISCORD_WEBHOOK_URL = "https://canary.discord.com/api/webhooks/1530479431347339415/9kdSYUvN-xavZMPB3p0a0wftd0AhWB-GX5d5iSNsV5fn_rGfGd100QlZbAGXJ5SHuTrl";
 
-    // Load coins from local storage or default to 0
-    let userCoins = parseInt(localStorage.getItem('ms_user_coins')) || 0;
-    let adInterval = null;
-    let secondsLeft = 10;
+    let currentUser = null;
+    let userCoins = 0;
 
-    // Sync Balance UI
-    document.getElementById('userCoinBalance').innerText = userCoins;
+    function toggleAuthView(view) {
+      document.getElementById('loginBox').style.display = (view === 'login') ? 'block' : 'none';
+      document.getElementById('signupBox').style.display = (view === 'signup') ? 'block' : 'none';
+    }
 
-    function saveCoins(amount) {
-      userCoins = amount;
-      localStorage.setItem('ms_user_coins', userCoins);
+    // Check Auth Session
+    async function initApp() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) {
+        currentUser = session.user;
+        document.getElementById('authOverlay').style.display = 'none';
+        document.getElementById('userEmailDisplay').innerText = currentUser.email;
+        await loadUserCoins();
+      } else {
+        document.getElementById('authOverlay').style.display = 'flex';
+      }
+    }
+
+    async function loadUserCoins() {
+      if (!currentUser) return;
+      let { data, error } = await supabaseClient
+        .from('profiles')
+        .select('coins')
+        .eq('id', currentUser.id)
+        .single();
+
+      if (data) {
+        userCoins = data.coins || 0;
+      } else {
+        await supabaseClient.from('profiles').insert([{ id: currentUser.id, email: currentUser.email, coins: 0 }]);
+        userCoins = 0;
+      }
       document.getElementById('userCoinBalance').innerText = userCoins;
     }
 
-    // Start 10-Second Ad Countdown
+    async function updateDatabaseCoins(newAmount) {
+      if (!currentUser) return;
+      userCoins = newAmount;
+      document.getElementById('userCoinBalance').innerText = userCoins;
+      await supabaseClient.from('profiles').update({ coins: userCoins }).eq('id', currentUser.id);
+    }
+
+    async function handleSignUp() {
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value.trim();
+      if (!email || !password) return alert('Please enter email & password');
+
+      const { data, error } = await supabaseClient.auth.signUp({ email, password });
+      if (error) alert(error.message);
+      else { alert('Account created successfully! Please log in.'); toggleAuthView('login'); }
+    }
+
+    async function handleLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      if (!email || !password) return alert('Please enter email & password');
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) alert(error.message);
+      else { currentUser = data.user; initApp(); }
+    }
+
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      location.reload();
+    }
+
+    // Ad Timer System
+    let secondsLeft = 10;
+    let adInterval = null;
+
     function startAdTimer() {
       secondsLeft = 10;
       document.getElementById('adTimerText').innerText = secondsLeft;
       document.getElementById('claimAdBtn').style.display = 'none';
-      document.getElementById('adTimerText').style.display = 'flex';
       document.getElementById('adModal').style.display = 'flex';
 
-      // Start 10-second countdown
       adInterval = setInterval(() => {
         secondsLeft--;
         document.getElementById('adTimerText').innerText = secondsLeft;
-
         if (secondsLeft <= 0) {
           clearInterval(adInterval);
-          document.getElementById('adTimerText').style.display = 'none';
           document.getElementById('claimAdBtn').style.display = 'inline-block';
         }
       }, 1000);
     }
 
-    // Claim 80 Coins after watching ad
-    function claimAdReward() {
-      saveCoins(userCoins + 80);
+    async function claimAdReward() {
+      await updateDatabaseCoins(userCoins + 80);
       document.getElementById('adModal').style.display = 'none';
       
       const statusMsg = document.getElementById('statusMsg');
       statusMsg.style.background = "rgba(56, 239, 125, 0.15)";
       statusMsg.style.border = "1px solid #38ef7d";
       statusMsg.style.color = "#38ef7d";
-      statusMsg.innerHTML = "🎉 <strong>+80 Coins Credited!</strong> Watch more ads to unlock higher follower packages!";
+      statusMsg.innerHTML = "🎉 <strong>+80 Coins Saved to Supabase!</strong>";
       statusMsg.style.display = "block";
     }
 
-    // Exchange Coins for Followers
     async function exchangeCoins(costCoins, packageName) {
       const handle = document.getElementById('targetHandle').value.trim();
       const statusMsg = document.getElementById('statusMsg');
@@ -496,7 +389,7 @@
         statusMsg.style.background = "rgba(255, 65, 108, 0.15)";
         statusMsg.style.border = "1px solid #ff416c";
         statusMsg.style.color = "#ff416c";
-        statusMsg.innerHTML = "❌ Please enter your Instagram handle or account link!";
+        statusMsg.innerHTML = "❌ Please enter your Instagram handle!";
         statusMsg.style.display = "block";
         return;
       }
@@ -505,46 +398,42 @@
         statusMsg.style.background = "rgba(255, 65, 108, 0.15)";
         statusMsg.style.border = "1px solid #ff416c";
         statusMsg.style.color = "#ff416c";
-        statusMsg.innerHTML = `❌ <strong>Insufficient Coins!</strong> You need <strong>${costCoins} Coins</strong> for this package. Watch more ads to earn coins!`;
+        statusMsg.innerHTML = `❌ <strong>Need ${costCoins} Coins!</strong> Watch more ads to earn coins.`;
         statusMsg.style.display = "block";
         return;
       }
 
-      // Deduct coins
-      saveCoins(userCoins - costCoins);
+      await updateDatabaseCoins(userCoins - costCoins);
 
-      // Dispatch order to Discord Webhook
       fetch(DISCORD_WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username: "MS Coin Exchange Bot",
-          avatar_url: "https://i.imgur.com/4M34hi2.png",
+          username: "MS Supabase System",
           embeds: [{
-            title: "🚀 New Follower Exchange Order Received!",
+            title: "🚀 New Follower Order!",
             color: 0xffd700,
             fields: [
-              { name: "👤 Target Handle / URL", value: `\`${handle}\``, inline: true },
-              { name: "📦 Redeemed Package", value: `${packageName}`, inline: true },
-              { name: "💰 Coins Spent", value: `${costCoins} Coins`, inline: true },
-              { name: "👛 Remaining Coins", value: `${userCoins} Coins`, inline: true }
+              { name: "📧 User Account", value: `\`${currentUser.email}\``, inline: true },
+              { name: "👤 Target Handle", value: `\`${handle}\``, inline: true },
+              { name: "📦 Package", value: `${packageName}`, inline: true },
+              { name: "💰 Coins Spent", value: `${costCoins} Coins`, inline: true }
             ],
-            footer: { text: "MS Rewards Coin Exchange System" },
             timestamp: new Date().toISOString()
           }]
         })
       }).catch(() => null);
 
-      // Show success message
       statusMsg.style.background = "rgba(56, 239, 125, 0.15)";
       statusMsg.style.border = "1px solid #38ef7d";
       statusMsg.style.color = "#38ef7d";
-      statusMsg.innerHTML = `🎉 <strong>Order Placed Successfully!</strong><br>Your request for <strong>${packageName}</strong> on handle <strong>${handle}</strong> has been logged!`;
+      statusMsg.innerHTML = `🎉 <strong>Order Placed!</strong> Request logged for <strong>${handle}</strong>!`;
       statusMsg.style.display = "block";
 
       document.getElementById('targetHandle').value = "";
     }
+
+    window.onload = initApp;
   </script>
 </body>
-    </html>
-    
+</html>
