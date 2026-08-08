@@ -113,6 +113,18 @@
       border-radius: 18px;
     }
 
+    .ad-notice-badge {
+      display: inline-block;
+      background: rgba(0, 242, 254, 0.15);
+      border: 1px solid var(--secondary);
+      color: var(--secondary);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
     .btn-watch-ad {
       width: 100%;
       padding: 16px;
@@ -144,7 +156,7 @@
       justify-content: space-between;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--card-border);
-      padding: 20px;
+      padding: 18px 20px;
       border-radius: 18px;
       margin-bottom: 15px;
       transition: all 0.3s ease;
@@ -156,8 +168,8 @@
     }
 
     .pkg-info h4 {
-      font-size: 1.2rem;
-      margin-bottom: 3px;
+      font-size: 1.15rem;
+      margin-bottom: 2px;
     }
 
     .pkg-info p {
@@ -166,7 +178,7 @@
     }
 
     .btn-exchange {
-      padding: 12px 20px;
+      padding: 12px 18px;
       background: var(--gold);
       color: #000;
       font-weight: 800;
@@ -177,6 +189,7 @@
       align-items: center;
       gap: 6px;
       transition: all 0.3s ease;
+      white-space: nowrap;
     }
 
     .btn-exchange:hover {
@@ -231,8 +244,8 @@
     }
 
     .ad-timer-circle {
-      width: 120px;
-      height: 120px;
+      width: 110px;
+      height: 110px;
       border-radius: 50%;
       border: 4px solid var(--secondary);
       display: flex;
@@ -241,14 +254,14 @@
       font-size: 2.5rem;
       font-weight: 800;
       color: var(--secondary);
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       box-shadow: 0 0 30px rgba(0, 242, 254, 0.5);
     }
 
     .ad-content-box {
       width: 100%;
       max-width: 450px;
-      height: 220px;
+      height: 180px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px dashed var(--card-border);
       border-radius: 20px;
@@ -308,8 +321,14 @@
         <i class="fa-solid fa-play-circle"></i> Earn Free Coins
       </div>
       <div class="ad-reward-box">
-        <h3>Watch 30-Second Sponsored Ad</h3>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 5px;">Earn <b>80 Coins</b> per completed ad. Collect 800 Coins (10 Ads) to unlock 100 Followers!</p>
+        <div class="ad-notice-badge"><i class="fa-solid fa-clock"></i> Important Requirement</div>
+        <h3>Watch 10-Second Sponsored Ad</h3>
+        <p style="color: #38ef7d; font-size: 0.9rem; font-weight: 600; margin-top: 6px;">
+          ⚠️ Please watch the ad for at least 10 seconds to get your reward!
+        </p>
+        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">
+          Earn <b>80 Coins</b> per ad watched. Collect 800 Coins (10 Ads) for 100 Followers or 8,000 Coins for 1,000 Followers!
+        </p>
         <button class="btn-watch-ad" onclick="startAdTimer()">
           <i class="fa-solid fa-film"></i> Watch Ad (+80 Coins)
         </button>
@@ -319,12 +338,12 @@
     <!-- Section 2: Coin Exchange Store -->
     <div class="card-section">
       <div class="section-header">
-        <i class="fa-solid fa-store"></i> Coin Exchange Store
+        <i class="fa-solid fa-store"></i> Followers Exchange Store
       </div>
 
       <div class="input-group">
-        <label><i class="fa-solid fa-user"></i> Target Instagram Handle or Post Link</label>
-        <input type="text" id="targetHandle" placeholder="@yourusername or Post URL">
+        <label><i class="fa-solid fa-user"></i> Target Instagram Handle or Account Link</label>
+        <input type="text" id="targetHandle" placeholder="@yourusername or Profile URL">
       </div>
 
       <!-- 100 Followers Package -->
@@ -338,14 +357,58 @@
         </button>
       </div>
 
-      <!-- 500 Likes Package -->
+      <!-- 200 Followers Package -->
       <div class="exchange-card">
         <div class="pkg-info">
-          <h4>500 Free Likes</h4>
-          <p>Requires 5 Ads Watched</p>
+          <h4>200 Free Followers</h4>
+          <p>Requires 20 Ads Watched</p>
         </div>
-        <button class="btn-exchange" onclick="exchangeCoins(400, '500 Free Likes')">
-          <i class="fa-solid fa-coins"></i> 400 Coins
+        <button class="btn-exchange" onclick="exchangeCoins(1600, '200 Free Followers')">
+          <i class="fa-solid fa-coins"></i> 1,600 Coins
+        </button>
+      </div>
+
+      <!-- 300 Followers Package -->
+      <div class="exchange-card">
+        <div class="pkg-info">
+          <h4>300 Free Followers</h4>
+          <p>Requires 30 Ads Watched</p>
+        </div>
+        <button class="btn-exchange" onclick="exchangeCoins(2400, '300 Free Followers')">
+          <i class="fa-solid fa-coins"></i> 2,400 Coins
+        </button>
+      </div>
+
+      <!-- 500 Followers Package -->
+      <div class="exchange-card">
+        <div class="pkg-info">
+          <h4>500 Free Followers</h4>
+          <p>Requires 50 Ads Watched</p>
+        </div>
+        <button class="btn-exchange" onclick="exchangeCoins(4000, '500 Free Followers')">
+          <i class="fa-solid fa-coins"></i> 4,000 Coins
+        </button>
+      </div>
+
+      <!-- 700 Followers Package -->
+      <div class="exchange-card">
+        <div class="pkg-info">
+          <h4>700 Free Followers</h4>
+          <p>Requires 70 Ads Watched</p>
+        </div>
+        <button class="btn-exchange" onclick="exchangeCoins(5600, '700 Free Followers')">
+          <i class="fa-solid fa-coins"></i> 5,600 Coins
+        </button>
+      </div>
+
+      <!-- 1,000 Followers Package -->
+      <div class="exchange-card">
+        <div class="pkg-info">
+          <h4>1,000 Free Followers</h4>
+          <p>Requires 100 Ads Watched</p>
+        </div>
+        <button class="btn-exchange" onclick="exchangeCoins(8000, '1,000 Free Followers')">
+          <i class="fa-solid fa-coins"></i> 8,000 Coins
         </button>
       </div>
 
@@ -354,12 +417,14 @@
 
   </div>
 
-  <!-- Fullscreen 30-Second Ad Modal -->
+  <!-- Fullscreen 10-Second Ad Modal -->
   <div class="ad-modal" id="adModal">
-    <h2 style="color: var(--secondary); margin-bottom: 5px;">Sponsored Ad Loading...</h2>
-    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Please wait 30 seconds to claim your 80 coins!</p>
+    <h2 style="color: var(--secondary); margin-bottom: 5px;">Sponsored Ad Active</h2>
+    <p style="color: #38ef7d; font-size: 0.95rem; font-weight: 600; margin-bottom: 15px;">
+      ⚠️ Please view the ad page for at least 10 seconds!
+    </p>
     
-    <div class="ad-timer-circle" id="adTimerText">30</div>
+    <div class="ad-timer-circle" id="adTimerText">10</div>
 
     <div class="ad-content-box">
       <i class="fa-solid fa-rectangle-ad" style="font-size: 3.5rem; color: var(--secondary); margin-bottom: 10px;"></i>
@@ -377,7 +442,7 @@
     // Load coins from local storage or default to 0
     let userCoins = parseInt(localStorage.getItem('ms_user_coins')) || 0;
     let adInterval = null;
-    let secondsLeft = 30;
+    let secondsLeft = 10;
 
     // Sync Balance UI
     document.getElementById('userCoinBalance').innerText = userCoins;
@@ -388,15 +453,15 @@
       document.getElementById('userCoinBalance').innerText = userCoins;
     }
 
-    // Start 30-Second Ad Countdown
+    // Start 10-Second Ad Countdown
     function startAdTimer() {
-      secondsLeft = 30;
+      secondsLeft = 10;
       document.getElementById('adTimerText').innerText = secondsLeft;
       document.getElementById('claimAdBtn').style.display = 'none';
       document.getElementById('adTimerText').style.display = 'flex';
       document.getElementById('adModal').style.display = 'flex';
 
-      // Start 30-second countdown
+      // Start 10-second countdown
       adInterval = setInterval(() => {
         secondsLeft--;
         document.getElementById('adTimerText').innerText = secondsLeft;
@@ -418,11 +483,11 @@
       statusMsg.style.background = "rgba(56, 239, 125, 0.15)";
       statusMsg.style.border = "1px solid #38ef7d";
       statusMsg.style.color = "#38ef7d";
-      statusMsg.innerHTML = "🎉 <strong>+80 Coins Credited!</strong> Keep watching to accumulate 800 coins!";
+      statusMsg.innerHTML = "🎉 <strong>+80 Coins Credited!</strong> Watch more ads to unlock higher follower packages!";
       statusMsg.style.display = "block";
     }
 
-    // Exchange Coins for Followers / Engagement
+    // Exchange Coins for Followers
     async function exchangeCoins(costCoins, packageName) {
       const handle = document.getElementById('targetHandle').value.trim();
       const statusMsg = document.getElementById('statusMsg');
@@ -431,7 +496,7 @@
         statusMsg.style.background = "rgba(255, 65, 108, 0.15)";
         statusMsg.style.border = "1px solid #ff416c";
         statusMsg.style.color = "#ff416c";
-        statusMsg.innerHTML = "❌ Please enter your Instagram handle or post link!";
+        statusMsg.innerHTML = "❌ Please enter your Instagram handle or account link!";
         statusMsg.style.display = "block";
         return;
       }
@@ -456,7 +521,7 @@
           username: "MS Coin Exchange Bot",
           avatar_url: "https://i.imgur.com/4M34hi2.png",
           embeds: [{
-            title: "🚀 New Coin Exchange Order Received!",
+            title: "🚀 New Follower Exchange Order Received!",
             color: 0xffd700,
             fields: [
               { name: "👤 Target Handle / URL", value: `\`${handle}\``, inline: true },
@@ -481,5 +546,5 @@
     }
   </script>
 </body>
-</html>
-
+    </html>
+    
