@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MS Followers | Watch Video Ads & Earn</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #8a2be2;
+      --primary-glow: #a855f7;
+      --secondary: #00f2fe;
+      --gold: #ffd700;
+      --bg: #090a0f;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text: #ffffff;
+      --text-muted: #a1a1aa;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .top-bar {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      margin-bottom: 25px;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.2rem;
+      background: linear-gradient(135deg, #fff, var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .coin-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 215, 0, 0.15);
+      border: 1px solid var(--gold);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      color: var(--gold);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    }
+
+    .container { width: 100%; max-width: 600px; }
+
+    .card-section {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      border-radius: 24px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    }
+
+    .section-header {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ad-reward-box {
+      text-align: center;
+      padding: 20px;
+      background: rgba(138, 43, 226, 0.1);
+      border: 1px dashed var(--primary-glow);
+      border-radius: 18px;
+    }
+
+    .btn-watch-ad {
+      width: 100%;
+      padding: 16px;
+      margin-top: 15px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      border-radius: 14px;
+      color: white;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 10px 25px rgba(138, 43, 226, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .exchange-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      padding: 20px;
+      border-radius: 18px;
+      margin-bottom: 15px;
+    }
+
+    .btn-exchange {
+      padding: 12px 20px;
+      background: var(--gold);
+      color: #000;
+      font-weight: 800;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .input-group { margin-bottom: 20px; }
+    .input-group label { display: block; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px; }
+    .input-group input {
+      width: 100%; padding: 16px 20px;
+      background: rgba(0, 0, 0, 0.4); border: 1px solid var(--card-border);
+      border-radius: 12px; color: #fff; font-size: 1rem; outline: none;
+    }
+
+    /* FULLSCREEN VIDEO AD MODAL */
+    .video-ad-modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(10px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .video-container {
+      width: 100%;
+      max-width: 500px;
+      background: #000;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--secondary);
+      box-shadow: 0 0 30px rgba(0, 242, 254, 0.4);
+      position: relative;
+    }
+
+    video {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .btn-claim-reward {
+      margin-top: 20px;
+      padding: 16px 35px;
+      background: #38ef7d;
+      color: #000;
+      font-weight: 800;
+      font-size: 1.05rem;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .status-msg { padding: 15px; border-radius: 12px; text-align: center; font-weight: 600; display: none; margin-top: 15px; }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div class="brand-title"><i class="fa-solid fa-coins" style="color: var(--gold);"></i> MS Rewards</div>
+    <div class="coin-badge">
+      <i class="fa-solid fa-coins"></i>
+      <span id="userCoinBalance">0</span> Coins
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card-section">
+      <div class="section-header">
+        <i class="fa-solid fa-circle-play"></i> Watch Video Ads
+      </div>
+      <div class="ad-reward-box">
+        <h3>Watch 30-Second Video Ad</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 5px;">Earn <b>80 Coins</b> per completed video ad. Collect 800 Coins to get 100 Followers!</p>
+        <button class="btn-watch-ad" onclick="playVideoAd()">
+          <i class="fa-solid fa-play"></i> Watch Video Ad (+80 Coins)
+        </button>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="section-header">
+        <i class="fa-solid fa-store"></i> Coin Exchange Store
+      </div>
+
+      <div class="input-group">
+        <label><i class="fa-solid fa-user"></i> Target Instagram Handle or Post Link</label>
+        <input type="text" id="targetHandle" placeholder="@yourusername or Post URL">
+      </div>
+
+      <div class="exchange-card">
+        <div>
+          <h4>100 Free Followers</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Requires 10 Video Ads</p>
+        </div>
+        <button class="btn-exchange" onclick="exchangeCoins(800, '100 Free Followers')">
+          <i class="fa-solid fa-coins"></i> 800 Coins
+        </button>
+      </div>
+
+      <div id="statusMsg" class="status-msg"></div>
+    </div>
+  </div>
+
+  <!-- VIDEO AD POPUP -->
+  <div class="video-ad-modal" id="videoAdModal">
+    <h3 style="color: var(--secondary); margin-bottom: 10px;"><i class="fa-solid fa-film"></i> Video Ad Playing...</h3>
+    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Watch the entire video to claim your 80 coins!</p>
+
+    <div class="video-container">
+      <video id="adVideoPlayer" playsinline>
+        <!-- Test video ad stream -->
+        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+      </video>
+    </div>
+
+    <button id="claimRewardBtn" class="btn-claim-reward" onclick="claimVideoReward()">
+      <i class="fa-solid fa-circle-check"></i> Claim +80 Coins Now!
+    </button>
+  </div>
+
+  <script>
+    const DISCORD_WEBHOOK_URL = "https://canary.discord.com/api/webhooks/1530479431347339415/9kdSYUvN-xavZMPB3p0a0wftd0AhWB-GX5d5iSNsV5fn_rGfGd100QlZbAGXJ5SHuTrl";
+
+    let userCoins = parseInt(localStorage.getItem('ms_user_coins')) || 0;
+    document.getElementById('userCoinBalance').innerText = userCoins;
+
+    function saveCoins(amount) {
+      userCoins = amount;
+      localStorage.setItem('ms_user_coins', userCoins);
+      document.getElementById('userCoinBalance').innerText = userCoins;
+    }
+
+    // Play 30-Second Video Ad
+    function playVideoAd() {
+      const modal = document.getElementById('videoAdModal');
+      const video = document.getElementById('adVideoPlayer');
+      const claimBtn = document.getElementById('claimRewardBtn');
+
+      claimBtn.style.display = 'none';
+      modal.style.display = 'flex';
+
+      // Reset video to start
+      video.currentTime = 0;
+      video.play();
+
+      // Detect when the video finishes playing completely
+      video.onended = function() {
+        claimBtn.style.display = 'inline-block';
+      };
+    }
+
+    function claimVideoReward() {
+      saveCoins(userCoins + 80);
+      document.getElementById('videoAdModal').style.display = 'none';
+
+      const statusMsg = document.getElementById('statusMsg');
+      statusMsg.style.background = "rgba(56, 239, 125, 0.15)";
+      statusMsg.style.border = "1px solid #38ef7d";
+      statusMsg.style.color = "#38ef7d";
+      statusMsg.innerHTML = "🎉 <strong>+80 Coins Credited!</strong> Watch more videos to reach 800 coins!";
+      statusMsg.style.display = "block";
+    }
+
+    async function exchangeCoins(costCoins, packageName) {
+      const handle = document.getElementById('targetHandle').value.trim();
+      const statusMsg = document.getElementById('statusMsg');
+
+      if (!handle) {
+        statusMsg.style.background = "rgba(255, 65, 108, 0.15)";
+        statusMsg.style.border = "1px solid #ff416c";
+        statusMsg.style.color = "#ff416c";
+        statusMsg.innerHTML = "❌ Please enter your Instagram handle or post URL!";
+        statusMsg.style.display = "block";
+        return;
+      }
+
+      if (userCoins < costCoins) {
+        statusMsg.style.background = "rgba(255, 65, 108, 0.15)";
+        statusMsg.style.border = "1px solid #ff416c";
+        statusMsg.style.color = "#ff416c";
+        statusMsg.innerHTML = `❌ <strong>Need More Coins!</strong> You need <strong>${costCoins} Coins</strong>. Watch more video ads!`;
+        statusMsg.style.display = "block";
+        return;
+      }
+
+      saveCoins(userCoins - costCoins);
+
+      fetch(DISCORD_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "MS Video Rewards Bot",
+          embeds: [{
+            title: "🚀 New Video Ad Exchange Order!",
+            color: 0xffd700,
+            fields: [
+              { name: "👤 Target Handle / URL", value: `\`${handle}\``, inline: true },
+              { name: "📦 Redeemed Package", value: `${packageName}`, inline: true },
+              { name: "💰 Coins Spent", value: `${costCoins} Coins`, inline: true }
+            ],
+            timestamp: new Date().toISOString()
+          }]
+        })
+      }).catch(() => null);
+
+      statusMsg.style.background = "rgba(56, 239, 125, 0.15)";
+      statusMsg.style.border = "1px solid #38ef7d";
+      statusMsg.style.color = "#38ef7d";
+      statusMsg.innerHTML = `🎉 <strong>Order Queued!</strong> Your request for <strong>${packageName}</strong> on handle <strong>${handle}</strong> has been logged!`;
+      statusMsg.style.display = "block";
+
+      document.getElementById('targetHandle').value = "";
+    }
+  </script>
+</body>
+      </html>
+
