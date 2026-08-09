@@ -8,6 +8,9 @@
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <!-- hCaptcha Official API Script -->
+  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+
   <!-- Google Fonts & FontAwesome Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -73,6 +76,12 @@
     }
 
     .auth-toggle-link { margin-top: 15px; font-size: 0.85rem; color: var(--secondary); cursor: pointer; text-decoration: underline; }
+
+    .captcha-container {
+      margin: 15px 0;
+      display: flex;
+      justify-content: center;
+    }
 
     /* TOP BAR */
     .top-bar {
@@ -171,6 +180,11 @@
         <input type="password" id="loginPassword" placeholder="••••••••">
       </div>
 
+      <!-- hCAPTCHA CONTAINER (LOGIN) -->
+      <div class="captcha-container">
+        <div class="h-captcha" data-sitekey="89289d32-058c-4128-92cc-0b9e67262240"></div>
+      </div>
+
       <button class="btn-auth" onclick="handleLogin()">Login to Wallet</button>
       <div class="auth-toggle-link" onclick="toggleAuthView('signup')">Don't have an account? Sign Up</div>
     </div>
@@ -186,6 +200,11 @@
       <div class="auth-input-group">
         <label>Password</label>
         <input type="password" id="signupPassword" placeholder="Minimum 6 characters">
+      </div>
+
+      <!-- hCAPTCHA CONTAINER (SIGNUP) -->
+      <div class="captcha-container">
+        <div class="h-captcha" data-sitekey="89289d32-058c-4128-92cc-0b9e67262240"></div>
       </div>
 
       <button class="btn-auth" onclick="handleSignUp()">Register Account</button>
@@ -211,12 +230,12 @@
         <i class="fa-solid fa-play-circle"></i> Earn Free Coins
       </div>
       <div class="ad-reward-box">
-        <h3>Watch 15-Second Sponsored Ad</h3>
+        <h3>Watch 30-Second Sponsored Ad</h3>
         <p style="color: #ff416c; font-size: 0.85rem; font-weight: 700; margin-top: 6px;">
-          🚨 REQUIREMENT: You MUST view the opened ad page for at least 15 full seconds!
+          🚨 REQUIREMENT: You MUST view the opened ad page for at least 30 full seconds!
         </p>
         <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">
-          Closing or going back before 15 seconds will forfeit your reward.
+          Closing or going back before 30 seconds will forfeit your reward.
         </p>
         <button class="btn-watch-ad" onclick="startAdTimer()">
           <i class="fa-solid fa-film"></i> Watch Ad (+80 Coins)
@@ -262,14 +281,14 @@
     </div>
   </div>
 
-  <!-- 15-Second Ad Modal -->
+  <!-- 30-Second Ad Modal -->
   <div class="ad-modal" id="adModal">
     <h2 style="color: var(--secondary); margin-bottom: 5px;">Sponsored Ad Active</h2>
     <p style="color: #38ef7d; font-size: 0.95rem; font-weight: 600; margin-bottom: 10px;" id="adModalStatusText">
-      ⚠️ Stay active on the site for at least 15 seconds!
+      ⚠️ Stay active on the site for at least 30 seconds!
     </p>
     
-    <div class="ad-timer-circle" id="adTimerText">15</div>
+    <div class="ad-timer-circle" id="adTimerText">30</div>
 
     <button id="claimAdBtn" class="btn-claim-ad" onclick="claimAdReward()">
       <i class="fa-solid fa-circle-check"></i> Claim +80 Coins Now!
@@ -298,6 +317,7 @@
     function toggleAuthView(view) {
       document.getElementById('loginBox').style.display = (view === 'login') ? 'block' : 'none';
       document.getElementById('signupBox').style.display = (view === 'signup') ? 'block' : 'none';
+      hcaptcha.reset(); // Reset widget when toggling
     }
 
     async function initApp() {
@@ -335,21 +355,47 @@
     async function handleSignUp() {
       const email = document.getElementById('signupEmail').value.trim();
       const password = document.getElementById('signupPassword').value.trim();
-      if (!email || !password) return alert('Please enter email & password');
+      const captchaToken = hcaptcha.getResponse();
 
-      const { error } = await supabaseClient.auth.signUp({ email, password });
-      if (error) alert(error.message);
-      else { alert('Account created successfully! Please log in.'); toggleAuthView('login'); }
+      if (!email || !password) return alert('Please enter email & password');
+      if (!captchaToken) return alert('Please complete the hCaptcha check!');
+
+      const { error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: { captchaToken }
+      });
+
+      if (error) {
+        alert(error.message);
+        hcaptcha.reset();
+      } else { 
+        alert('Account created successfully! Please log in.'); 
+        toggleAuthView('login'); 
+      }
     }
 
     async function handleLogin() {
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value.trim();
-      if (!email || !password) return alert('Please enter email & password');
+      const captchaToken = hcaptcha.getResponse();
 
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if (error) alert(error.message);
-      else { currentUser = data.user; initApp(); }
+      if (!email || !password) return alert('Please enter email & password');
+      if (!captchaToken) return alert('Please complete the hCaptcha check!');
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password,
+        options: { captchaToken }
+      });
+
+      if (error) {
+        alert(error.message);
+        hcaptcha.reset();
+      } else { 
+        currentUser = data.user; 
+        initApp(); 
+      }
     }
 
     async function handleLogout() {
@@ -357,24 +403,21 @@
       location.reload();
     }
 
-    // STRICT ANTI-CHEAT 15-SECOND AD SYSTEM
-    let secondsLeft = 15;
+    // STRICT ANTI-CHEAT 30-SECOND AD SYSTEM
+    let secondsLeft = 30;
     let adInterval = null;
     let isAdActive = false;
 
     function startAdTimer() {
-      // 1. Open direct ad link in new tab
       window.open(DIRECT_AD_URL, '_blank');
-
-      // 2. Push state to intercept browser back button tap
       history.pushState({ adActive: true }, "");
 
       isAdActive = true;
-      secondsLeft = 15;
+      secondsLeft = 30;
       document.getElementById('adTimerText').style.display = 'flex';
       document.getElementById('adTimerText').innerText = secondsLeft;
       document.getElementById('claimAdBtn').style.display = 'none';
-      document.getElementById('adModalStatusText').innerText = "⚠️ Stay on page for at least 15 seconds!";
+      document.getElementById('adModalStatusText').innerText = "⚠️ Stay on page for at least 30 seconds!";
       document.getElementById('adModalStatusText').style.color = "#38ef7d";
       document.getElementById('adModal').style.display = 'flex';
 
@@ -390,7 +433,7 @@
           clearInterval(adInterval);
           document.getElementById('adTimerText').style.display = 'none';
           document.getElementById('claimAdBtn').style.display = 'inline-block';
-          document.getElementById('adModalStatusText').innerText = "✅ 15 Seconds Completed! Click below to claim.";
+          document.getElementById('adModalStatusText').innerText = "✅ 30 Seconds Completed! Click below to claim.";
         }
       }, 1000);
     }
@@ -401,26 +444,22 @@
       document.getElementById('adModal').style.display = 'none';
     }
 
-    // Intercept back button tap on mobile/browsers
     window.addEventListener('popstate', function(e) {
-      if (isAdActive) {
-        cancelAdTimer(); // Reset and destroy timer if user presses back button!
-      }
+      if (isAdActive) cancelAdTimer();
     });
 
-    // Pause timer if user leaves tab or minimizes app
     document.addEventListener('visibilitychange', function() {
       if (document.hidden && isAdActive && secondsLeft > 0) {
         document.getElementById('adModalStatusText').innerText = "⏸️ Timer paused! Keep site open to continue.";
         document.getElementById('adModalStatusText').style.color = "#ff416c";
       } else if (!document.hidden && isAdActive && secondsLeft > 0) {
-        document.getElementById('adModalStatusText').innerText = "⚠️ Stay active for 15 seconds!";
+        document.getElementById('adModalStatusText').innerText = "⚠️ Stay active for 30 seconds!";
         document.getElementById('adModalStatusText').style.color = "#38ef7d";
       }
     });
 
     async function claimAdReward() {
-      if (secondsLeft > 0) return; // Anti-cheat fallback
+      if (secondsLeft > 0) return;
       
       isAdActive = false;
       await updateDatabaseCoins(userCoins + 80);
@@ -430,7 +469,7 @@
       statusMsg.style.background = "rgba(56, 239, 125, 0.15)";
       statusMsg.style.border = "1px solid #38ef7d";
       statusMsg.style.color = "#38ef7d";
-      statusMsg.innerHTML = "🎉 <strong>+80 Coins Credited! (15-Sec Ad Verified)</strong>";
+      statusMsg.innerHTML = "🎉 <strong>+80 Coins Credited! (30-Sec Ad Verified)</strong>";
       statusMsg.style.display = "block";
     }
 
@@ -451,7 +490,7 @@
         statusMsg.style.background = "rgba(255, 65, 108, 0.15)";
         statusMsg.style.border = "1px solid #ff416c";
         statusMsg.style.color = "#ff416c";
-        statusMsg.innerHTML = `❌ <strong>Need ${costCoins} Coins!</strong> Watch more 15-second ads to earn coins.`;
+        statusMsg.innerHTML = `❌ <strong>Need ${costCoins} Coins!</strong> Watch more 30-second ads to earn coins.`;
         statusMsg.style.display = "block";
         return;
       }
@@ -490,4 +529,3 @@
   </script>
 </body>
 </html>
-
