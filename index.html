@@ -8,8 +8,8 @@
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- hCaptcha Official API Script -->
-  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+  <!-- hCaptcha Script with Explicit Render Callback -->
+  <script src="https://js.hcaptcha.com/1/api.js?onload=onHCaptchaLoad&render=explicit" async defer></script>
 
   <!-- Google Fonts & FontAwesome Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -180,9 +180,9 @@
         <input type="password" id="loginPassword" placeholder="••••••••">
       </div>
 
-      <!-- hCAPTCHA CONTAINER (LOGIN) -->
+      <!-- LOGIN hCAPTCHA CONTAINER -->
       <div class="captcha-container">
-        <div class="h-captcha" data-sitekey="89289d32-058c-4128-92cc-0b9e67262240"></div>
+        <div id="loginCaptcha"></div>
       </div>
 
       <button class="btn-auth" onclick="handleLogin()">Login to Wallet</button>
@@ -202,9 +202,9 @@
         <input type="password" id="signupPassword" placeholder="Minimum 6 characters">
       </div>
 
-      <!-- hCAPTCHA CONTAINER (SIGNUP) -->
+      <!-- SIGNUP hCAPTCHA CONTAINER -->
       <div class="captcha-container">
-        <div class="h-captcha" data-sitekey="89289d32-058c-4128-92cc-0b9e67262240"></div>
+        <div id="signupCaptcha"></div>
       </div>
 
       <button class="btn-auth" onclick="handleSignUp()">Register Account</button>
@@ -314,10 +314,26 @@
     let currentUser = null;
     let userCoins = 0;
 
+    // Explicit hCaptcha Widget Instance IDs
+    let loginWidgetId = null;
+    let signupWidgetId = null;
+
+    const HCAPTCHA_SITE_KEY = "89289d32-058c-4128-92cc-0b9e67262240";
+
+    function onHCaptchaLoad() {
+      if (window.hcaptcha) {
+        loginWidgetId = hcaptcha.render('loginCaptcha', { sitekey: HCAPTCHA_SITE_KEY });
+        signupWidgetId = hcaptcha.render('signupCaptcha', { sitekey: HCAPTCHA_SITE_KEY });
+      }
+    }
+
     function toggleAuthView(view) {
       document.getElementById('loginBox').style.display = (view === 'login') ? 'block' : 'none';
       document.getElementById('signupBox').style.display = (view === 'signup') ? 'block' : 'none';
-      hcaptcha.reset(); // Reset widget when toggling
+      if (window.hcaptcha) {
+        if (loginWidgetId !== null) hcaptcha.reset(loginWidgetId);
+        if (signupWidgetId !== null) hcaptcha.reset(signupWidgetId);
+      }
     }
 
     async function initApp() {
@@ -355,12 +371,16 @@
     async function handleSignUp() {
       const email = document.getElementById('signupEmail').value.trim();
       const password = document.getElementById('signupPassword').value.trim();
-      const captchaToken = hcaptcha.getResponse();
+      
+      let captchaToken = null;
+      if (window.hcaptcha && signupWidgetId !== null) {
+        captchaToken = hcaptcha.getResponse(signupWidgetId);
+      }
 
       if (!email || !password) return alert('Please enter email & password');
       if (!captchaToken) return alert('Please complete the hCaptcha check!');
 
-      const { error } = await supabaseClient.auth.signUp({
+      const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
         options: { captchaToken }
@@ -368,17 +388,21 @@
 
       if (error) {
         alert(error.message);
-        hcaptcha.reset();
+        if (window.hcaptcha && signupWidgetId !== null) hcaptcha.reset(signupWidgetId);
       } else { 
-        alert('Account created successfully! Please log in.'); 
-        toggleAuthView('login'); 
+        alert('Account created successfully! Logging you in...'); 
+        location.reload(); 
       }
     }
 
     async function handleLogin() {
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value.trim();
-      const captchaToken = hcaptcha.getResponse();
+      
+      let captchaToken = null;
+      if (window.hcaptcha && loginWidgetId !== null) {
+        captchaToken = hcaptcha.getResponse(loginWidgetId);
+      }
 
       if (!email || !password) return alert('Please enter email & password');
       if (!captchaToken) return alert('Please complete the hCaptcha check!');
@@ -391,7 +415,7 @@
 
       if (error) {
         alert(error.message);
-        hcaptcha.reset();
+        if (window.hcaptcha && loginWidgetId !== null) hcaptcha.reset(loginWidgetId);
       } else { 
         currentUser = data.user; 
         initApp(); 
