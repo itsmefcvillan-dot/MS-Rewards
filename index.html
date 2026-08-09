@@ -272,10 +272,16 @@
   </div>
 
   <script>
-    // PRE-CONFIGURED SUPABASE CREDENTIALS (VERIFIED STRING)
+    // UPDATED SUPABASE INIT USING PUBLISHABLE KEY
     const SUPABASE_URL = "https://fuxmbdedoewokiykwcmb.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1eG1iZGVkb2V3b2tpeWt3Y21iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxODgxMDcsImV4cCI6MjEwMTc2NDEwN30.KTxw7aTj-5HErqPjzSJGNpbwa58_9ZqEwHN36qexO-k";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_KEY = "sb_publishable_HiS8v8k2FCaEfaezoLV6Tw_XqXTus3c";
+    
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true
+      }
+    });
 
     const DISCORD_WEBHOOK_URL = "https://canary.discord.com/api/webhooks/1530479431347339415/9kdSYUvN-xavZMPB3p0a0wftd0AhWB-GX5d5iSNsV5fn_rGfGd100QlZbAGXJ5SHuTrl";
     
@@ -292,7 +298,7 @@
 
     // Check Auth Session
     async function initApp() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
       if (session) {
         currentUser = session.user;
         document.getElementById('authOverlay').style.display = 'none';
@@ -333,8 +339,12 @@
       if (!email || !password) return alert('Please enter email & password');
 
       const { data, error } = await supabaseClient.auth.signUp({ email, password });
-      if (error) alert(error.message);
-      else { alert('Account created successfully! Please log in.'); toggleAuthView('login'); }
+      if (error) {
+        alert(error.message);
+      } else { 
+        alert('Account created successfully! Please log in.'); 
+        toggleAuthView('login'); 
+      }
     }
 
     async function handleLogin() {
@@ -343,8 +353,12 @@
       if (!email || !password) return alert('Please enter email & password');
 
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if (error) alert(error.message);
-      else { currentUser = data.user; initApp(); }
+      if (error) {
+        alert(error.message);
+      } else { 
+        currentUser = data.user; 
+        initApp(); 
+      }
     }
 
     async function handleLogout() {
